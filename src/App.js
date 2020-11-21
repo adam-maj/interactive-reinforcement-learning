@@ -9,6 +9,7 @@ const Notifications = lazy(() => import('./components/notifications/Notification
 const Login = lazy(() => import('./components/auth/Login'));
 const Register = lazy(() => import('./components/auth/Register'));
 const Home = lazy(() => import('./components/landing/Home'));
+const ReinforcementLearning = lazy(() => import('./components/demo/ReinforcementLearning'));
 
 function App() {
   return (
@@ -27,6 +28,12 @@ function App() {
           <BrowserRouter>
             <Switch>
 
+              <Route path="/learning" exact>
+                <Suspense fallback={<Section />}>
+                  <ReinforcementLearning />
+                </Suspense>
+              </Route>
+
               <Route path="/register">
                 <Suspense fallback={<Section />}>
                   <Register />
@@ -38,7 +45,6 @@ function App() {
                   <Login />
                 </Suspense>
               </Route>
-
 
               <Route path="/" exact>
                 <Suspense fallback={<Section />}>
