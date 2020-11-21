@@ -45,7 +45,7 @@ export const Section = styled.section`
   align-items: center;
   justify-content: center;
   height: ${props => props.h || '100vh'};
-  background: ${props => props.bg || '#222222'};
+  background: ${props => props.bg || '#2D2656'};
 
   ${props => 
     props.top ? css`
