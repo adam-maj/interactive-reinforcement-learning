@@ -4,7 +4,7 @@ export const Nav = styled.nav`
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0px 20px;
+  padding: 0px 20px 0px 20px;
   position: fixed;
   top: 0px;
   width: 100vw;
@@ -16,8 +16,7 @@ export const Nav = styled.nav`
 export const NavTabs = styled.div`
   display: flex;
   align-items: center;
-  justify-content: space-evenly;
-  width: 500px;
+  margin-right: 40px;
 `
 
 export const NavTab = styled.p`
@@ -26,4 +25,6 @@ export const NavTab = styled.p`
   font-size: 24px;
   color: white;
   cursor: pointer;
+  margin-right: 40px;
+  margin-left: 40px;
 `

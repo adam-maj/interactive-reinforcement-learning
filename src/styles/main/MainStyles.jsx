@@ -63,7 +63,8 @@ export const Flex = styled.div`
   align-items: ${props => props.ai || 'center'};
   justify-content: ${props => props.jc || 'flex-start'};
   border-radius: ${props => props.br || '5px'};
-  background: ${props => props.bg || 'white'};
+  background: ${props => props.bg || 'default'};
+  flex-wrap: ${props => props.fw || 'auto'};
   ${margin}
   ${padding}
 `

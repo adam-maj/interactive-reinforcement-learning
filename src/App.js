@@ -34,18 +34,6 @@ function App() {
                 </Suspense>
               </Route>
 
-              <Route path="/register">
-                <Suspense fallback={<Section />}>
-                  <Register />
-                </Suspense>
-              </Route>
-
-              <Route path="/login">
-                <Suspense fallback={<Section />}>
-                  <Login />
-                </Suspense>
-              </Route>
-
               <Route path="/" exact>
                 <Suspense fallback={<Section />}>
                   <Home />

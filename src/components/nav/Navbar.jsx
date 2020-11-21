@@ -12,6 +12,19 @@ export default function Navbar() {
     setGlobalUsername(null)
   }
 
+  return (
+    <Nav>
+      <Link href="/">
+        <NavTab>InteractiveML</NavTab>
+      </Link>
+      <NavTabs>
+        <Link href='/learning'>
+          <NavTab>Demo</NavTab>
+        </Link>
+      </NavTabs>
+    </Nav>
+  )
+
   if (username) {
     return (
       <Nav>
