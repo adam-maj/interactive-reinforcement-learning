@@ -9,7 +9,7 @@ const Notifications = lazy(() => import('./components/notifications/Notification
 const Login = lazy(() => import('./components/auth/Login'));
 const Register = lazy(() => import('./components/auth/Register'));
 const Home = lazy(() => import('./components/landing/Home'));
-const ReinforcementLearning = lazy(() => import('./components/demo/ReinforcementLearning'));
+const ReinforcementLearning = lazy(() => import('./components/ReinforcementLearning'));
 
 function App() {
   return (

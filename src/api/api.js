@@ -61,3 +61,31 @@ export const current_user = () => makeRequest({
 export const logout = () => {
   localStorage.removeItem('token')
 }
+
+export const train = ({ 
+  width, height, cargoPickups, cargoDropoffs
+}) => makeRequest({
+  url: '/api/train/',
+  method: 'POST',
+  data: { 
+    width: width, 
+    height: height, 
+    cargo_pickups: cargoPickups, 
+    cargo_dropoffs: cargoDropoffs
+  }
+})
+
+export const run = ({
+  matrix, truckLocation, width, height, cargoPickups, cargoDropoffs
+}) => makeRequest({
+  url: '/api/run/',
+  method: 'POST',
+  data: {
+    q_matrix: matrix,
+    truck_location: truckLocation,
+    width: width,
+    height: height,
+    cargo_pickups: cargoPickups,
+    cargo_dropoffs: cargoDropoffs
+  }
+})

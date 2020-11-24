@@ -24,11 +24,11 @@ class TruckWorld(object):
     [5]: Dropoff Cargo
     """
     
-    def __init__(self, m, n, cargo_locations, cargo_destinations):
+    def __init__(self, m, n, cargo_pickups, cargo_dropoffs):
         """
         Here we initialize the truck class. The m and n variables are the 
-        dimensions of the grid. Cargo_locations is a list of the locations
-        of possible cargo pickup points, and cargo_destinations is a list of
+        dimensions of the grid. cargo_pickups is a list of the locations
+        of possible cargo pickup points, and cargo_dropoffs is a list of
         the possible locations for the cargo dropoff points. Note that in each
         individual instance of the game, cargo only spawns at one of these 
         pickup points and must be delivered to one of these dropoff points
@@ -36,8 +36,8 @@ class TruckWorld(object):
         """
         self.m = m
         self.n = n
-        self.cargo_locations = cargo_locations
-        self.cargo_destinations = cargo_destinations
+        self.cargo_pickups = cargo_pickups
+        self.cargo_dropoffs = cargo_dropoffs
         self.cargo_location, self.cargo_destination = self.get_cargo_location()
         self.agent_position = self.get_agent_position()
         
@@ -49,14 +49,14 @@ class TruckWorld(object):
         self.state_space = []
         for m in range(self.m):
             for n in range(self.n):
-                for l in range(len(cargo_locations) + 1):
-                    for d in range(len(cargo_destinations)):
+                for l in range(len(cargo_pickups) + 1):
+                    for d in range(len(cargo_dropoffs)):
                         state = m
                         state *= self.m
                         state += n
                         state *= self.n
                         state += l
-                        state *= len(self.cargo_locations) + 1
+                        state *= len(self.cargo_pickups) + 1
                         state += d
                         self.state_space.append(state)
         
@@ -82,7 +82,7 @@ class TruckWorld(object):
         based on the set of possible cargo locations and cargo destinations. 
         This occurs at the begining of any new game.
         """
-        return np.random.choice(len(self.cargo_locations)), np.random.choice(len(self.cargo_destinations))
+        return np.random.choice(len(self.cargo_pickups)), np.random.choice(len(self.cargo_dropoffs))
     
     def get_agent_position(self):
         """
@@ -104,11 +104,11 @@ class TruckWorld(object):
         agent_m, agent_n = self.get_coordinates(self.agent_position)
         self.grid[agent_m][agent_n] = 'T'
         
-        if not self.cargo_location == len(self.cargo_locations):
-            cargo_m, cargo_n = self.get_coordinates(self.cargo_locations[self.cargo_location])
+        if not self.cargo_location == len(self.cargo_pickups):
+            cargo_m, cargo_n = self.get_coordinates(self.cargo_pickups[self.cargo_location])
             self.grid[cargo_m][cargo_n] = 'C'
         
-        dest_m, dest_n = self.get_coordinates(self.cargo_destinations[self.cargo_destination])
+        dest_m, dest_n = self.get_coordinates(self.cargo_dropoffs[self.cargo_destination])
         self.grid[dest_m][dest_n] = 'D'
 
     def encode_state(self):
@@ -124,7 +124,7 @@ class TruckWorld(object):
         state += n
         state *= self.n
         state += self.cargo_location
-        state *= len(self.cargo_locations) + 1
+        state *= len(self.cargo_pickups) + 1
         state += self.cargo_destination
         
         return state
@@ -136,8 +136,8 @@ class TruckWorld(object):
         the location of the cargo, and the destination of the cargo.
         """
         out = []
-        out.append(state % (len(self.cargo_locations) + 1))
-        state // (len(self.cargo_locations) + 1)
+        out.append(state % (len(self.cargo_pickups) + 1))
+        state // (len(self.cargo_pickups) + 1)
         out.append(state % self.n)
         state // self.n
         out.append(state % self.m)
@@ -173,7 +173,7 @@ class TruckWorld(object):
         based on this action, and the player is given a reward for their action.
         """
         agent_m, agent_n = self.get_coordinates(self.agent_position)
-        dest_m, dest_n = self.get_coordinates(self.cargo_destinations[self.cargo_destination])
+        dest_m, dest_n = self.get_coordinates(self.cargo_dropoffs[self.cargo_destination])
         
         # The reward for most actions is -1. This includes moving. Since the 
         # agent gets a negative reward for even moving, it will be incentivized
@@ -188,14 +188,14 @@ class TruckWorld(object):
                 self.update_grid()
         elif action == 4:
             # This is the pickup cargo action
-            if not self.cargo_location == len(self.cargo_locations):
-                cargo_m, cargo_n = self.get_coordinates(self.cargo_locations[self.cargo_location])
+            if not self.cargo_location == len(self.cargo_pickups):
+                cargo_m, cargo_n = self.get_coordinates(self.cargo_pickups[self.cargo_location])
                 if cargo_m == agent_m and cargo_n == cargo_n:
-                    self.cargo_location = len(self.cargo_locations)
+                    self.cargo_location = len(self.cargo_pickups)
                     self.update_grid()
         elif action == 5:
             # This is the dropoff cargo action
-            if self.cargo_location == len(self.cargo_locations):
+            if self.cargo_location == len(self.cargo_pickups):
                 if dest_m == agent_m and dest_n == agent_n:
                     # If the truck successfully drops of cargo at the correct 
                     # location, it is given a reward of 20 to incentivize this.

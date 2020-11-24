@@ -9,7 +9,8 @@ export const Nav = styled.nav`
   top: 0px;
   width: 100vw;
   height: 64px;
-  background: #5142AD;
+  /* background: #5142AD; */
+  background: #3BB9A2;
   box-shadow: 0px 10px 10px rgba(0, 0, 0, 0.25);
 `
 

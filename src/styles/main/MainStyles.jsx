@@ -74,6 +74,14 @@ export const Box = styled.div`
   width: ${props => props.w || 'auto'};
   border-radius: ${props => props.br || '5px'};
   background: ${props => props.bg || 'white'};
+  color: ${props => props.color || 'white'};
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Roboto', sans-serif;
+  font-size: ${props => props.fs || '16px'};
+  font-weight: ${props => props.fw || 400};
+  cursor: ${props => props.cursor || 'default'};
   ${margin};
 `
 
@@ -106,11 +114,6 @@ export const Button = styled.button`
   opacity: 1;
   ${margin}
 
-  &:hover {
-    border-radius: 25px;
-    opacity: 0.9;
-  }
-
   ${props =>
     props.primary ? css`
       color: white;
@@ -118,6 +121,17 @@ export const Button = styled.button`
     ` : css`
       color: ${props => props.color || '#222222'};
       background: white;
+    `
+  }
+
+  ${props => 
+    props.disabled ? css`
+      cursor: default;
+    ` : css`
+        &:hover {
+          border-radius: 25px;
+          opacity: 0.9;
+        }
     `
   }
 `
