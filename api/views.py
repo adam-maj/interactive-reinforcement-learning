@@ -32,6 +32,9 @@ class RunModel(APIView):
         # Create array to store game
         game = []
 
+        # Index of all action mappings
+        actions = ["Up", "Down", "Left", "Right", "Pickup", "Dropoff"]
+
         # Take a maximum of 99 steps
         for step in range(99):
             action = np.argmax(Q[state, :])
@@ -41,6 +44,7 @@ class RunModel(APIView):
             state = new_state
 
             move = {
+                "action": actions[action],
                 "truck_location": environment.agent_position,
                 "cargo_location": environment.cargo_location,
                 "cargo_destination": environment.cargo_destination
@@ -80,7 +84,7 @@ class TrainModel(APIView):
         Q = np.zeros((len(environment.state_space), len(environment.possible_actions)))
         
         # Cap the number of games to train model
-        max_games = 20000
+        max_games = 50000
 
         # Cap the length of each game at 99 moves
         maxSteps = 99

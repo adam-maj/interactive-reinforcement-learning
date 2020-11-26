@@ -41,7 +41,6 @@ class TruckWorld(object):
         self.cargo_location, self.cargo_destination = self.get_cargo_location()
         self.agent_position = self.get_agent_position()
         
-        
         # Here we create the state space for the game, or the set of ALL POSSIBLE
         # states that the game can be in. We find this state space by figuring out
         # the number of possible locations the car, cargo, and cargo destination
@@ -78,11 +77,11 @@ class TruckWorld(object):
         
     def get_cargo_location(self):
         """
-        This function places the cargo location and cargo destination randomly
-        based on the set of possible cargo locations and cargo destinations. 
-        This occurs at the begining of any new game.
+        This function chooses a route from the pairs of cargo locations
+        and cargo destinations randomly
         """
-        return np.random.choice(len(self.cargo_pickups)), np.random.choice(len(self.cargo_dropoffs))
+        route = np.random.choice(len(self.cargo_pickups)) 
+        return route, route
     
     def get_agent_position(self):
         """
@@ -190,7 +189,7 @@ class TruckWorld(object):
             # This is the pickup cargo action
             if not self.cargo_location == len(self.cargo_pickups):
                 cargo_m, cargo_n = self.get_coordinates(self.cargo_pickups[self.cargo_location])
-                if cargo_m == agent_m and cargo_n == cargo_n:
+                if cargo_m == agent_m and cargo_n == agent_n:
                     self.cargo_location = len(self.cargo_pickups)
                     self.update_grid()
         elif action == 5:

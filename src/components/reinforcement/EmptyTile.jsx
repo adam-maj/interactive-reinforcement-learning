@@ -3,7 +3,7 @@ import { Box } from '../../styles/main/MainStyles';
 import PickupTile from './PickupTile';
 import DropoffTile from './DropoffTile';
 
-export default function EmptyTile({ color, mode, edit, changeMode }) {
+export default function EmptyTile({ color, background, mode, edit, changeMode }) {
   const [hover, setHover] = useState(false);
   const [final, setFinal] = useState(false);
   const [tile, setTile] = useState();
@@ -44,7 +44,7 @@ export default function EmptyTile({ color, mode, edit, changeMode }) {
   return (
     <Box 
       onMouseEnter={() => edit && setHover(true)}
-      w="50px" h="50px" br="10px" bg="#999999" ml="5px" 
+      w="50px" h="50px" br="10px" bg={background} ml="5px" 
     />
   )
 }

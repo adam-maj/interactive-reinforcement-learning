@@ -26,6 +26,8 @@ export default function ReinforcementLearning() {
   const [matrix, setMatrix] = useState([]);
   const [game, setGame] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [gameMode, setGameMode] = useState(false);
+  const [frame, setFrame] = useState(0);
 
   // Pickup and dropoff tile colors
   const COLORS = {
@@ -56,6 +58,7 @@ export default function ReinforcementLearning() {
       })
   }
 
+  // Send Q matrix and board to API to run an game instance
   function runModel() {
     api
       .run({
@@ -68,7 +71,7 @@ export default function ReinforcementLearning() {
       })
       .then(res => {
         setGame(res)
-        console.log(res)
+        console.log(res);
       })
   }
 
@@ -80,6 +83,11 @@ export default function ReinforcementLearning() {
   // Returns true if more cargo locations can be added to the board
   function canAddMore() {
     return cargoPickups.length < Object.keys(COLORS).length;
+  }
+
+  // Returns whether a command is a movement command
+  function isMovement(command) {
+    return ["Up", "Down", "Left", "Right"].includes(command)
   }
 
   // Change edit mode and add cargo pickups and dropoffs by pair
@@ -109,7 +117,12 @@ export default function ReinforcementLearning() {
   function getTile(tile, index) {
     switch (tile[0]) {
       case "T":
-        return <TruckTile direction={tile[1]} />
+        return  (
+          <TruckTile 
+            direction={tile[1]}
+            color={tile[2] ? COLORS[tile[2]] : null}
+          />
+        )
       case "P":
         return (
           <PickupTile 
@@ -124,10 +137,11 @@ export default function ReinforcementLearning() {
             color={COLORS[tile[1]]} 
           />
         )
-      default:
+      case "-":
         return (
           <EmptyTile 
-            color={getColor()}  
+            color={getColor()}
+            background={tile[1] ? COLORS[tile[1]] : '#999999'}
             mode={mode}
             edit={edit && canAddMore()}
             changeMode={() => changeMode(index)}
@@ -138,23 +152,61 @@ export default function ReinforcementLearning() {
 
   // Create board given truck location, cargo pickups and dropoffs, and dimensions
   function makeBoard() {
+    let location = gameMode ? game[frame].truck_location : truckLocation;
+    let route = gameMode ? game[frame].cargo_destination : null
+    let pickups = gameMode ? [cargoPickups[route]] : cargoPickups;
+    let dropoffs = gameMode ? [cargoDropoffs[route]] : cargoDropoffs;
+
     let position = 0
     let board = []
+
+    let direction;
+    if (gameMode) {
+      if (frame === 0) {
+        if (isMovement(game[frame + 1].action)) {
+          direction = game[frame + 1].action[0]
+        } else {
+          direction = game[frame + 2].action[0]
+        }
+      } else if (frame + 1 === game.length) {
+        direction = game[frame - 1].action[0]
+      } else {
+        if (isMovement(game[frame].action)) {
+          direction = game[frame].action[0]
+        } else {
+          direction = game[frame + 1].action[0]
+        }
+      }
+    }
 
     for (let i = 0; i < height; i++) {
       let row = []
 
       for (let j = 0; j < width; j++) {
-        if (position === truckLocation) {
-          row.push("TU")
-        } else if (cargoPickups.includes(position)) {
-          const color = Object.keys(COLORS)[cargoPickups.indexOf(position)]
-          row.push("P" + color)
-        } else if (cargoDropoffs.includes(position)) {
-          const color = Object.keys(COLORS)[cargoDropoffs.indexOf(position)]
+        if (position === location) {
+          if (pickups.includes(position) || dropoffs.includes(position)) {
+            const color = Object.keys(COLORS)[route]
+            row.push(`T${direction}${color}`)
+          } else {
+            row.push(`T${direction}`)
+          }
+        } else if (pickups.includes(position)) {
+          if (gameMode) {
+            const color = Object.keys(COLORS)[route]
+            if (game[frame].cargo_location === cargoPickups.length) {
+              row.push("-" + color)
+            } else {
+              row.push("P" + color)
+            }
+          } else {
+            const color = Object.keys(COLORS)[pickups.indexOf(position)]
+            row.push("P" + color)
+          }
+        } else if (dropoffs.includes(position)) {
+          const color = gameMode ? Object.keys(COLORS)[route] : Object.keys(COLORS)[dropoffs.indexOf(position)]
           row.push("D" + color)
         } else {
-          row.push("--")
+          row.push("-")
         }
         position++
       }
@@ -163,6 +215,20 @@ export default function ReinforcementLearning() {
     }
 
     return board
+  }
+
+  // Start the game playback, then run a frame per click until its done
+  function playGame() {
+    if (!gameMode) {
+      setGameMode(true)
+      setFrame(0)
+    } else {
+      if (game.length - 1 > frame) {
+        setFrame(frame + 1)
+      } else {
+        setGameMode(false)
+      }
+    }
   }
 
   return (
@@ -210,7 +276,7 @@ export default function ReinforcementLearning() {
       </Flex>
       <Button mt="10px" onClick={getModel} disabled={loading}>Train</Button>
       <Button mt="10px" onClick={runModel} disabled={loading}>Run</Button>
+      <Button mt="10px" onClick={playGame} disabled={loading}>Play</Button>
     </Section>
   )
 }
-
