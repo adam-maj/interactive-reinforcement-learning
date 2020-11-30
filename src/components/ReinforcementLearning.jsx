@@ -4,7 +4,8 @@ import TruckTile from './reinforcement/TruckTile';
 import EmptyTile from './reinforcement/EmptyTile';
 import PickupTile from './reinforcement/PickupTile';
 import DropoffTile from './reinforcement/DropoffTile';
-import EditButton from './reinforcement/EditButton';
+import { EditButton, PlayButton, ForwardButton, BackwardButton } from './reinforcement/Buttons';
+import Slider from '@material-ui/core/Slider';
 import * as api from '../api/api';
 
 export default function ReinforcementLearning() {
@@ -34,7 +35,8 @@ export default function ReinforcementLearning() {
     "B": "#306BFF",
     "R": "#E13131",
     "Y": "#DA9716",
-    "P": "#E249CA"
+    "P": "#E249CA",
+    "-": "#444444"
   }
 
   // Reset edit mode state on new edit instance
@@ -44,35 +46,39 @@ export default function ReinforcementLearning() {
 
   // Send current board to API to train model
   function getModel() {
-    setLoading(true)
-    api
-      .train({
-        width: parseInt(width),
-        height: parseInt(height),
-        cargoPickups: cargoPickups,
-        cargoDropoffs: cargoDropoffs
-      })
-      .then(res => {
-        setMatrix(res)
-        setLoading(false)
-      })
+    if (!gameMode && cargoPickups.length > 0) {
+      setLoading(true)
+      api
+        .train({
+          width: parseInt(width),
+          height: parseInt(height),
+          cargoPickups: cargoPickups,
+          cargoDropoffs: cargoDropoffs
+        })
+        .then(res => {
+          setMatrix(res)
+          setLoading(false)
+        })
+    }
   }
 
   // Send Q matrix and board to API to run an game instance
   function runModel() {
-    api
-      .run({
-        matrix: matrix,
-        truckLocation: truckLocation,
-        width: parseInt(width),
-        height: parseInt(height),
-        cargoPickups: cargoPickups,
-        cargoDropoffs: cargoDropoffs
-      })
-      .then(res => {
-        setGame(res)
-        console.log(res);
-      })
+    if (!gameMode && matrix) {
+      api
+        .run({
+          matrix: matrix,
+          truckLocation: truckLocation,
+          width: parseInt(width),
+          height: parseInt(height),
+          cargoPickups: cargoPickups,
+          cargoDropoffs: cargoDropoffs
+        })
+        .then(res => {
+          setGame(res)
+          console.log(res);
+        })
+    }
   }
 
   // Return color of next cargo pickup/dropoff the user can add
@@ -82,7 +88,7 @@ export default function ReinforcementLearning() {
 
   // Returns true if more cargo locations can be added to the board
   function canAddMore() {
-    return cargoPickups.length < Object.keys(COLORS).length;
+    return cargoPickups.length < Object.keys(COLORS).length - 1;
   }
 
   // Returns whether a command is a movement command
@@ -120,7 +126,7 @@ export default function ReinforcementLearning() {
         return  (
           <TruckTile 
             direction={tile[1]}
-            color={tile[2] ? COLORS[tile[2]] : null}
+            color={COLORS[tile[2]]}
           />
         )
       case "P":
@@ -141,7 +147,7 @@ export default function ReinforcementLearning() {
         return (
           <EmptyTile 
             color={getColor()}
-            background={tile[1] ? COLORS[tile[1]] : '#999999'}
+            background={COLORS[tile[1]]}
             mode={mode}
             edit={edit && canAddMore()}
             changeMode={() => changeMode(index)}
@@ -188,7 +194,7 @@ export default function ReinforcementLearning() {
             const color = Object.keys(COLORS)[route]
             row.push(`T${direction}${color}`)
           } else {
-            row.push(`T${direction}`)
+            row.push(`T${direction}-`)
           }
         } else if (pickups.includes(position)) {
           if (gameMode) {
@@ -206,7 +212,7 @@ export default function ReinforcementLearning() {
           const color = gameMode ? Object.keys(COLORS)[route] : Object.keys(COLORS)[dropoffs.indexOf(position)]
           row.push("D" + color)
         } else {
-          row.push("-")
+          row.push("--")
         }
         position++
       }
@@ -217,29 +223,71 @@ export default function ReinforcementLearning() {
     return board
   }
 
-  // Start the game playback, then run a frame per click until its done
   function playGame() {
-    if (!gameMode) {
+    if (!gameMode && game.length > 0) {
       setGameMode(true)
-      setFrame(0)
     } else {
-      if (game.length - 1 > frame) {
-        setFrame(frame + 1)
-      } else {
-        setGameMode(false)
-      }
+      setGameMode(false)
+      setFrame(0)
+    }
+  }
+
+  function changeFrame(value) {
+    if (frame + value >= 0 && frame + value < game.length && gameMode) {
+      setFrame(frame + value)
+    } else if (frame + value === game.length) {
+      setFrame(0)
+      setGameMode(false)
     }
   }
 
   return (
     <Section>
+      <Flex>
+        <BackwardButton onClick={() => changeFrame(-1)} />
+        <PlayButton gameMode={gameMode} onClick={playGame} />
+        <ForwardButton onClick={() => changeFrame(1)} />
+      </Flex>
+      <Flex w="200px" h="40px">
+        <Slider
+          style={{ color: '#3BB9A2' }}
+          value={frame}
+          step={1}
+          min={0}
+          max={game.length - 1}
+          onChange={(e, v) =>  setFrame(v)}
+          disabled={!gameMode}
+          marks
+        />
+      </Flex>
       <Flex 
         w={`${makeBoard()[0].length * 55 + 5}px`}
+        w="225px"
         ai="center" 
         jc="flex-end" 
         pr="10px"
         mb="10px"
       >
+        <Button 
+          mr="10px"
+          h="33px"
+          w="80px"
+          color="#3BB9A2"
+          onClick={getModel}
+          primary
+        >
+          Train
+        </Button>
+        <Button 
+          mr="10px"
+          h="33px"
+          w="80px"
+          color="#3BB9A2"
+          onClick={runModel}
+          primary
+        >
+          Run
+        </Button>
         <EditButton 
           edit={edit} 
           onClick={() => setEdit(!edit)}
@@ -254,7 +302,7 @@ export default function ReinforcementLearning() {
       >
         {makeBoard().map((row, y) => row.map((tile, x) => getTile(tile, y * width + x)))}
       </Flex>
-      <Flex ai="center" jc="center">
+      <Flex ai="center" jc="center" h="24px">
         <Text fs="16px" fw="bold" mr="4px">W:</Text>
         <Input 
           value={width}
@@ -274,9 +322,6 @@ export default function ReinforcementLearning() {
           type="number" step="1" min="1" max="7" w="30px" h="20px" mr="20px"
         />
       </Flex>
-      <Button mt="10px" onClick={getModel} disabled={loading}>Train</Button>
-      <Button mt="10px" onClick={runModel} disabled={loading}>Run</Button>
-      <Button mt="10px" onClick={playGame} disabled={loading}>Play</Button>
     </Section>
   )
 }

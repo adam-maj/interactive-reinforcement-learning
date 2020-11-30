@@ -45,7 +45,7 @@ export const Section = styled.section`
   align-items: center;
   justify-content: center;
   height: ${props => props.h || '100vh'};
-  background: ${props => props.bg || '#2D2656'};
+  background: ${props => props.bg || '#222222'};
 
   ${props => 
     props.top ? css`
@@ -59,6 +59,7 @@ export const Flex = styled.div`
   height: ${props => props.h || 'auto'};
   width: ${props => props.w || 'auto'};
   max-width: ${props => props.mw || 'none'};
+  min-width: ${props => props.minw || 'none'};
   flex-direction: ${props => props.fd || 'row'};
   align-items: ${props => props.ai || 'center'};
   justify-content: ${props => props.jc || 'flex-start'};
@@ -103,11 +104,11 @@ export const Text = styled.p`
 
 export const Button = styled.button`
   font-family: 'Roboto', sans-serif;
-  font-size: ${props => props.fs || '20px'};
+  font-size: ${props => props.fs || '18px'};
   height: ${props => props.h || '40px'};
   width: ${props => props.w || '150px'};
   border-radius: 10px;
-  font-weight: 700;
+  font-weight: 500;
   outline: none !important;
   cursor: pointer;
   border: none;
