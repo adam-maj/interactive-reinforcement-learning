@@ -5,7 +5,7 @@ import EmptyTile from './reinforcement/EmptyTile';
 import PickupTile from './reinforcement/PickupTile';
 import DropoffTile from './reinforcement/DropoffTile';
 import { EditButton, PlayButton, ForwardButton, BackwardButton } from './reinforcement/Buttons';
-import Slider from '@material-ui/core/Slider';
+import { Slider, CircularProgress } from '@material-ui/core';
 import * as api from '../api/api';
 
 export default function ReinforcementLearning() {
@@ -19,6 +19,7 @@ export default function ReinforcementLearning() {
   const [edit, setEdit] = useState(false);
   const [mode, setMode] = useState("Pickup");
   const [newPickup, setNewPickup] = useState(null);
+  const [changed, setChanged] = useState(false);
 
   // Run game state
   const [truckLocation, setTruckLocation] = useState(null);
@@ -58,13 +59,14 @@ export default function ReinforcementLearning() {
         .then(res => {
           setMatrix(res)
           setLoading(false)
+          setChanged(false)
         })
     }
   }
 
   // Send Q matrix and board to API to run an game instance
   function runModel() {
-    if (!gameMode && matrix) {
+    if (!gameMode && matrix.length > 0 && !changed) {
       api
         .run({
           matrix: matrix,
@@ -101,6 +103,7 @@ export default function ReinforcementLearning() {
     if (mode === "Dropoff") {
       setCargoPickups([...cargoPickups, newPickup])
       setCargoDropoffs([...cargoDropoffs, index])
+      setChanged(true)
       setMode("Pickup")
     } else if (mode === "Pickup") {
       setNewPickup(index)
@@ -117,6 +120,7 @@ export default function ReinforcementLearning() {
     let newDropoffs = [...cargoDropoffs]
     newDropoffs.splice(cargoIndex, 1)
     setCargoDropoffs(newDropoffs)
+    setChanged(true)
   }
 
   // Get the tile associated with each board entry value
@@ -243,10 +247,10 @@ export default function ReinforcementLearning() {
 
   return (
     <Section>
-      <Flex>
-        <BackwardButton onClick={() => changeFrame(-1)} />
-        <PlayButton gameMode={gameMode} onClick={playGame} />
-        <ForwardButton onClick={() => changeFrame(1)} />
+      <Flex mt="20px">
+        <BackwardButton onClick={() => changeFrame(-1)} disabled={!gameMode}/>
+        <PlayButton gameMode={gameMode} onClick={playGame} disabled={loading || edit || game.length === 0 || changed}/>
+        <ForwardButton onClick={() => changeFrame(1)} disabled={!gameMode}/>
       </Flex>
       <Flex w="200px" h="40px">
         <Slider
@@ -256,7 +260,7 @@ export default function ReinforcementLearning() {
           min={0}
           max={game.length - 1}
           onChange={(e, v) =>  setFrame(v)}
-          disabled={!gameMode}
+          disabled={!gameMode || edit}
           marks
         />
       </Flex>
@@ -275,8 +279,14 @@ export default function ReinforcementLearning() {
           color="#3BB9A2"
           onClick={getModel}
           primary
+          disabled={loading || edit || gameMode || !changed || cargoPickups.length === 0}
         >
-          Train
+          {loading ?
+            <CircularProgress 
+              size="22px"
+              style={{ color: 'white', marginTop: 4 }} 
+            />
+          : 'Train' }
         </Button>
         <Button 
           mr="10px"
@@ -285,12 +295,14 @@ export default function ReinforcementLearning() {
           color="#3BB9A2"
           onClick={runModel}
           primary
+          disabled={loading || edit || gameMode || changed || matrix.length === 0}
         >
           Run
         </Button>
         <EditButton 
           edit={edit} 
-          onClick={() => setEdit(!edit)}
+          disabled={loading || gameMode}
+          onClick={() => !loading && setEdit(!edit)}
         />
       </Flex>
       <Flex 
@@ -307,9 +319,10 @@ export default function ReinforcementLearning() {
         <Input 
           value={width}
           onChange={e => {
-            setWidth(e.target.value)
-            setEdit(false)  
+            setWidth(e.target.value) 
+            setChanged(true)
           }}
+          disabled={!edit}
           type="number" step="1" min="1" max="7" w="30px" h="20px" 
         />
         <Text fs="16px" fw="bold" ml="16px" mr="4px">H:</Text>
@@ -317,8 +330,9 @@ export default function ReinforcementLearning() {
           value={height}
           onChange={e => {
             setHeight(e.target.value)
-            setEdit(false)
+            setChanged(true)
           }}
+          disabled={!edit}
           type="number" step="1" min="1" max="7" w="30px" h="20px" mr="20px"
         />
       </Flex>

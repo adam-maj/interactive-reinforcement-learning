@@ -128,6 +128,7 @@ export const Button = styled.button`
   ${props => 
     props.disabled ? css`
       cursor: default;
+      color: rgba(255, 255, 255, 0.6)
     ` : css`
         &:hover {
           border-radius: 25px;
@@ -155,4 +156,8 @@ export const Input = styled.input`
   border-radius: 5px;
   outline: none !important;
   ${margin}
+
+  ${props => props.disabled && css`
+    background: white;
+  `}
 `
