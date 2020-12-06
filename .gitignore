@@ -17,6 +17,7 @@
 
 # migrations
 /authentication/migrations
+/api/migrations
 
 # misc
 .DS_Store

@@ -1,9 +1,6 @@
 from api.environment import *
 
 def train(width, height, cargo_pickups, cargo_dropoffs):
-    print("Worker is functioning correctly.")
-
-def test(width, height, cargo_pickups, cargo_dropoffs):
     # Initialize reinforcement learning environment
     environment = TruckWorld(width, height, cargo_pickups, cargo_dropoffs)
 
