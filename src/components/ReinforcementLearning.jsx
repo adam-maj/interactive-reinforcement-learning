@@ -57,9 +57,9 @@ export default function ReinforcementLearning() {
           cargoDropoffs: cargoDropoffs
         })
         .then(res => {
-          setMatrix(res)
+          // setMatrix(res)
           setLoading(false)
-          setChanged(false)
+          // setChanged(false)
         })
     }
   }

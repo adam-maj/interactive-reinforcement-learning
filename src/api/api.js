@@ -13,9 +13,14 @@ function makeRequest({ url, method, headers, data }) {
 
   return new Promise((resolve, reject) => {
     fetch(url, options)
-      .then((res) => {
+      .then(async(res) => {
         if (res.status < 400) {
-          resolve(res.json());
+          try {
+            let response = await res.json()
+            resolve(response);
+          } catch(err) {
+            resolve(res);
+          }
         } else {
           reject(res.error);
           return
