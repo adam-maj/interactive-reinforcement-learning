@@ -45,21 +45,42 @@ export default function ReinforcementLearning() {
     setMode("Pickup")
   }, [edit])
 
+  function sleep (time) {
+    return new Promise((resolve) => setTimeout(resolve, time));
+  }
+
+  function getParams() {
+    return {
+      width: parseInt(width),
+      height: parseInt(height),
+      cargoPickups: cargoPickups,
+      cargoDropoffs: cargoDropoffs
+    }
+  }
+
+  function trainModel() {
+    api
+      .train(getParams())
+      .then(res => {
+        getModel()
+      })
+  }
+
   // Send current board to API to train model
   function getModel() {
     if (!gameMode && cargoPickups.length > 0) {
       setLoading(true)
       api
-        .train({
-          width: parseInt(width),
-          height: parseInt(height),
-          cargoPickups: cargoPickups,
-          cargoDropoffs: cargoDropoffs
-        })
-        .then(res => {
-          // setMatrix(res)
-          setLoading(false)
-          // setChanged(false)
+        .get(getParams())
+        .then(async(res) => {
+          if (res.status === 204) {
+            await sleep(5000)
+            getModel()
+          } else {
+            setMatrix(res)
+            setLoading(false)
+            setChanged(false)
+          }
         })
     }
   }
@@ -71,14 +92,10 @@ export default function ReinforcementLearning() {
         .run({
           matrix: matrix,
           truckLocation: truckLocation,
-          width: parseInt(width),
-          height: parseInt(height),
-          cargoPickups: cargoPickups,
-          cargoDropoffs: cargoDropoffs
+          ...getParams()
         })
         .then(res => {
           setGame(res)
-          console.log(res);
         })
     }
   }
@@ -277,7 +294,7 @@ export default function ReinforcementLearning() {
           h="33px"
           w="80px"
           color="#3BB9A2"
-          onClick={getModel}
+          onClick={trainModel}
           primary
           disabled={loading || edit || gameMode || !changed || cargoPickups.length === 0}
         >

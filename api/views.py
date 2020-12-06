@@ -5,7 +5,25 @@ from rest_framework.authentication import TokenAuthentication
 from worker import conn
 from .utils import train
 from api.environment import *
+from api.models import Matrix
 from rq import Queue
+
+class GetModel(APIView):
+    permission_classes = (permissions.AllowAny,)
+    authentication_classes = (TokenAuthentication,)
+
+    def post(self, request, format=None):
+        width = request.data["width"]
+        height = request.data["height"]
+        cargo_pickups = request.data["cargo_pickups"]
+        cargo_dropoffs = request.data["cargo_dropoffs"]
+
+        try:
+            matrix = Matrix.objects.get(width=width, height=height, cargo_pickups=str(cargo_pickups), cargo_dropoffs=str(cargo_dropoffs))
+            Q = matrix.decode(matrix.matrix)
+            return Response(Q, status=status.HTTP_200_OK)
+        except Matrix.DoesNotExist:
+            return Response(status=status.HTTP_204_NO_CONTENT)
 
 class RunModel(APIView):
     permission_classes = (permissions.AllowAny,)
@@ -71,7 +89,11 @@ class TrainModel(APIView):
         cargo_pickups = request.data["cargo_pickups"]
         cargo_dropoffs = request.data["cargo_dropoffs"]
 
-        q = Queue(connection=conn)
-        q.enqueue(train, width, height, cargo_pickups, cargo_dropoffs)
+        try:
+            matrix = Matrix.objects.get(width=width, height=height, cargo_pickups=str(cargo_pickups), cargo_dropoffs=str(cargo_dropoffs))
+            return Response(status=status.HTTP_200_OK)
+        except Matrix.DoesNotExist:
+            q = Queue(connection=conn)
+            q.enqueue(train, width, height, cargo_pickups, cargo_dropoffs)
 
-        return Response(status=status.HTTP_200_OK)
+            return Response(status=status.HTTP_200_OK)

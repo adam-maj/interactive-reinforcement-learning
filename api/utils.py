@@ -1,4 +1,5 @@
 from api.environment import *
+from api.models import *
 
 def train(width, height, cargo_pickups, cargo_dropoffs):
     # Initialize reinforcement learning environment
@@ -95,3 +96,5 @@ def train(width, height, cargo_pickups, cargo_dropoffs):
     print(total_rewards[-40:-1]) 
 
     #Save Q to database here
+    matrix = Matrix(width=width, height=height, cargo_pickups=str(cargo_pickups), cargo_dropoffs=str(cargo_dropoffs), matrix=str([list(a) for a in list(Q)]))
+    matrix.save()

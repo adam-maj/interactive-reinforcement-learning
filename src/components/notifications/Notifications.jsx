@@ -18,7 +18,7 @@ export default function Notifications() {
           color: 'white', 
           marginRight: "15px" 
         }} 
-        class={`fas ${error ? 'fa-exclamation-circle' : 'fa-check-circle'}`}   
+        className={`fas ${error ? 'fa-exclamation-circle' : 'fa-check-circle'}`}   
       />
       <Text fs="14px" color="white">
         {notification}
@@ -31,7 +31,7 @@ export default function Notifications() {
           marginRight: "-30px", 
           cursor: 'pointer' 
         }} 
-        class="fas fa-times" 
+        className="fas fa-times" 
       />
     </Notification>  
   )

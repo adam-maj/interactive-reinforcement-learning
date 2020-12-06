@@ -80,6 +80,19 @@ export const train = ({
   }
 })
 
+export const get = ({ 
+  width, height, cargoPickups, cargoDropoffs
+}) => makeRequest({
+  url: '/api/get/',
+  method: 'POST',
+  data: {
+    width: width, 
+    height: height, 
+    cargo_pickups: cargoPickups, 
+    cargo_dropoffs: cargoDropoffs
+  }
+})
+
 export const run = ({
   matrix, truckLocation, width, height, cargoPickups, cargoDropoffs
 }) => makeRequest({

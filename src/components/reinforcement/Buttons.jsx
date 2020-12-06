@@ -55,7 +55,7 @@ export function ForwardButton({ disabled, onClick }) {
       br="50px" pl="10px" cursor={disabled ? "default" : "pointer"}
     >
       <i 
-        class="fas fa-fast-forward"
+        className="fas fa-fast-forward"
         style={{ color: disabled ? 'rgba(255, 255, 255, 0.6)' : 'white' }}
       />
     </Box>
@@ -70,7 +70,7 @@ export function BackwardButton({ disabled, onClick }) {
       br="50px" pl="10px" cursor={disabled ? "default" : "pointer"}
     >
       <i 
-        class="fas fa-fast-forward"
+        className="fas fa-fast-forward"
         style={{ 
           transform: "rotate(180deg)", 
           color: disabled ? 'rgba(255, 255, 255, 0.6)' : 'white' 
