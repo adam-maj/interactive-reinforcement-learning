@@ -244,6 +244,7 @@ export default function ReinforcementLearning() {
     return board
   }
 
+  // Start a playback of the game sent from the backend
   function playGame() {
     if (!gameMode && game.length > 0) {
       setGameMode(true)
@@ -253,6 +254,7 @@ export default function ReinforcementLearning() {
     }
   }
 
+  // Increment to the next game frame playback, or end the game playback if its the last frame
   function changeFrame(value) {
     if (frame + value >= 0 && frame + value < game.length && gameMode) {
       setFrame(frame + value)
