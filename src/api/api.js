@@ -13,7 +13,7 @@ function makeRequest({ url, method, headers, data }) {
 
   return new Promise((resolve, reject) => {
     fetch(url, options)
-      .then((res) => {
+      .then(async(res) => {
         if (res.status < 400) {
           if (res.headers.get('content-type')?.indexOf('application/json') > -1) {
             resolve(res.json())
@@ -23,7 +23,7 @@ function makeRequest({ url, method, headers, data }) {
           return
         } else {
           if (res.headers.get('content-type')?.indexOf('application/json') > -1) {
-            console.log(res.json())
+            console.log(await res.json())
           } else {
             console.log(res)
           }
