@@ -64,6 +64,7 @@ export default function ReinforcementLearning() {
       .then(res => {
         getModel()
       })
+      .catch(err => console.log(err))
   }
 
   // Send current board to API to train model
