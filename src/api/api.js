@@ -22,6 +22,11 @@ function makeRequest({ url, method, headers, data }) {
           }
           return
         } else {
+          if (res.headers.get('content-type')?.indexOf('application/json') > -1) {
+            console.log(res.json())
+          } else {
+            console.log(res)
+          }
           reject(res.error);
           return
         }
