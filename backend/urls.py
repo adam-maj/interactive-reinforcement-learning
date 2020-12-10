@@ -9,5 +9,5 @@ urlpatterns = [
     path('token-auth/', obtain_jwt_token),
     path('authentication/', include('authentication.urls')),
     path('api/', include('api.urls')),
-    # path('<str:path>', TemplateView.as_view(template_name='index.html')),
+    path('<str:path>', TemplateView.as_view(template_name='index.html')),
 ]
