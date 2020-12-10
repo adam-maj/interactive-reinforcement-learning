@@ -93,7 +93,10 @@ class TrainModel(APIView):
             matrix = Matrix.objects.get(width=width, height=height, cargo_pickups=str(cargo_pickups), cargo_dropoffs=str(cargo_dropoffs))
             return Response(status=status.HTTP_200_OK)
         except Matrix.DoesNotExist:
-            q = Queue(connection=conn)
-            q.enqueue(train, width, height, cargo_pickups, cargo_dropoffs)
+            try:
+                q = Queue(connection=conn)
+                q.enqueue(train, width, height, cargo_pickups, cargo_dropoffs)
+            except Exception as e:
+                return Response(str(e), status=status.HTTP_404_NOT_FOUND)
 
             return Response(status=status.HTTP_200_OK)
