@@ -1,30 +1,34 @@
 import React, { useState, useEffect } from 'react';
 import { Box } from '../../styles/main/MainStyles';
 
-export default function PickupTile({ color, remove, onMouseLeave, onClick }) {
+export default function PickupTile({ color, remove, index, setRemove, onMouseLeave, onClick }) {
   const [hover, setHover] = useState();
-  const [final, setFinal] = useState(false);
+  const [hide, setHide] = useState(remove);
 
   useEffect(() => {
-    setFinal(false)
+    setHide(remove)
   }, [remove])
-
-  if (remove && hover || final) {
-    return (
-      <Box 
-        onClick={() => setFinal(true)}
-        onMouseLeave={() => setHover(false)}
-        w="50px" h="50px" br="10px" bg="#999999" ml="5px" 
-      />
-    )
-  }
   
   return (
     <svg
-      onMouseEnter={() => remove && setHover(true)}
-      onMouseLeave={onMouseLeave}
+      onMouseEnter={() => {
+        setHover(true)
+        try {
+          setRemove(index)
+        } catch(err) {
+
+        }
+      }} 
+      onMouseLeave={hide ? () => {
+          setHover(false)
+          try {
+            setRemove(null)  
+          } catch(err) {
+            
+          }
+        } : onMouseLeave}
       onClick={onClick}
-      style={{ marginLeft: 5 }}
+      style={{ marginLeft: 5, opacity: hide && 0.8 }}
       xmlns="http://www.w3.org/2000/svg"
       xmlnsXlink="http://www.w3.org/1999/xlink"
       width="50"

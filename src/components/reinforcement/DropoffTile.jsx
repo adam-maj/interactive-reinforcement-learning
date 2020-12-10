@@ -1,11 +1,34 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
+import { Box } from '../../styles/main/MainStyles';
 
-export default function DropoffTile({ color, onMouseLeave, onClick }) {
+export default function DropoffTile({ color, remove, index, setRemove, onMouseLeave, onClick }) {
+  const [hover, setHover] = useState(true);
+  const [hide, setHide] = useState(remove)
+
+  useEffect(() => {
+    setHide(remove)
+  }, [remove])
+
   return (
     <svg
-      onMouseLeave={onMouseLeave}
+      onMouseEnter={() => {
+        setHover(true)
+        try {
+          setRemove(index) 
+        } catch(err) {
+
+        }
+      }}
+      onMouseLeave={hide ? () => {
+          setHover(false)
+          try {
+            setRemove(null)
+          } catch(err) {
+            
+          }
+        } : onMouseLeave}
       onClick={onClick}
-      style={{ marginLeft: 5 }}
+      style={{ marginLeft: 5 , opacity: hide && 0.8 }}
       xmlns="http://www.w3.org/2000/svg"
       xmlnsXlink="http://www.w3.org/1999/xlink"
       width="50"

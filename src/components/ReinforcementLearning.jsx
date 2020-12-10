@@ -20,6 +20,7 @@ export default function ReinforcementLearning() {
   const [mode, setMode] = useState("Pickup");
   const [newPickup, setNewPickup] = useState(null);
   const [changed, setChanged] = useState(false);
+  const [remove, setRemove] = useState(false);
 
   // Run game state
   const [truckLocation, setTruckLocation] = useState(null);
@@ -155,6 +156,9 @@ export default function ReinforcementLearning() {
           <PickupTile 
             onClick={() => edit && deleteCargo(index)}
             color={COLORS[tile[1]]} 
+            setRemove={(val) => setRemove(val)}
+            remove={edit && remove === cargoPickups.indexOf(index)}
+            index={cargoPickups.indexOf(index)}
           />
         )
       case "D": 
@@ -162,6 +166,9 @@ export default function ReinforcementLearning() {
           <DropoffTile 
             onClick={() => edit && deleteCargo(index)}
             color={COLORS[tile[1]]} 
+            setRemove={(val) => setRemove(val)}
+            remove={edit && remove === cargoDropoffs.indexOf(index)}
+            index={cargoDropoffs.indexOf(index)}
           />
         )
       case "-":
