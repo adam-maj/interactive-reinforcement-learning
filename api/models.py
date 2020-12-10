@@ -6,7 +6,7 @@ class Matrix(models.Model):
     height = models.IntegerField()
     cargo_pickups = models.CharField(max_length=100)
     cargo_dropoffs = models.CharField(max_length=100)
-    matrix = models.CharField(max_length=10000)
+    matrix = models.TextField()
 
     def decode(self, encoded):
         lists = encoded[1:-1].split('], [')
